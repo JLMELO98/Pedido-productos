@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido de Productos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .product {
+            display: inline-block;
+            width: 28%;
+            margin: 10px 1%;
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #fafafa;
+            box-sizing: border-box;
+        }
+        .product img {
+            width: 125px;
+            height: 125px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .price {
+            color: #555;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .admin-panel {
+            display: none;
+            margin-top: 30px;
+        }
+        .admin-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .admin-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Pedido de Productos</h1>
+        <form id="orderForm">
+            <div class="product">
+                <img src="img/galelta-selz.webp" alt="Galleta Selz">
+                <label for="quantity1">Galleta Selz original</label>
+                <span class="price" id="price1">$400</span>
+                <label for="quantity1">Cantidad:</label>
+                <input type="number" id="quantity1" name="quantity1" min="0" value="0" required onchange="updateTotal()">
+            </div>
+
+            <div class="product">
+                <img src="img/galleta-selz-queso.webp" alt="Galleta Selz Queso">
+                <label for="quantity2">Galleta Selz Queso</label>
+                <span class="price" id="price2">$400</span>
+                <label for="quantity2">Cantidad:</label>
+                <input type="number" id="quantity2" name="quantity2" min="0" value="0" required onchange="updateTotal()">
+            </div>
+
+            <div class="product">
+                <img src="img/alfajor-panchote.jpeg" alt="Alfajor Panchote">
+                <label for="quantity3">Alfajor Panchote</label>
+                <span class="price" id="price3">$350</span>
+                <label for="quantity3">Cantidad:</label>
+                <input type="number" id="quantity3" name="quantity3" min="0" value="0" required onchange="updateTotal()">
+            </div>
+
+            <label for="name">Tu nombre:</label>
+            <input type="text" id="name" name="name" placeholder="Ingresa tu nombre" required>
+
+            <div class="total-container" id="totalContainer">
+                Total a pagar: $0
+            </div>
+
+            <button type="button" onclick="sendOrder()">Enviar Pedido</button>
+        </form>
+
+        <div class="info">
+            <h3>Datos del Vendedor:</h3>
+            <p><strong>Nombre:</strong> Andrea Reyes P.</p>
+            <p><strong>RUT:</strong> 16.993.035-K</p>
+            <p><strong>Banco:</strong> Cuenta Rut Banco Estado</p>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <h2>Panel Administrador</h2>
+            <label for="adminPassword">Contraseña de Administrador:</label>
+            <input type="password" id="adminPassword" placeholder="Contraseña">
+            <button class="admin-button" onclick="verifyAdmin()">Acceder</button>
+        </div>
+
+        <div class="admin-form" id="adminForm">
+            <h2>Añadir Nuevo Producto</h2>
+            <label for="productName">Nombre del Producto:</label>
+            <input type="text" id="productName">
+
+            <label for="productPrice">Precio del Producto:</label>
+            <input type="number" id="productPrice">
+
+            <label for="productImage">Imagen del Producto (URL):</label>
+            <input type="text" id="productImage">
+
+            <button class="admin-button" onclick="addProduct()">Añadir Producto</button>
+        </div>
+    </div>
+
+    <script>
+        // Función para actualizar el total
+        function updateTotal() {
+            let total = 0;
+            total += parseInt(document.getElementById('quantity1').value) * 400;
+            total += parseInt(document.getElementById('quantity2').value) * 400;
+            total += parseInt(document.getElementById('quantity3').value) * 350;
+
+            document.getElementById('totalContainer').textContent = `Total a pagar: $${total.toLocaleString()}`;
+        }
+
+        // Función para enviar el pedido
+        function sendOrder() {
+            const name = document.getElementById('name').value;
+            const quantity1 = document.getElementById('quantity1').value;
+            const quantity2 = document.getElementById('quantity2').value;
+            const quantity3 = document.getElementById('quantity3').value;
+
+            // Construir el mensaje para WhatsApp
+            let message = `Nuevo pedido de ${name}:\n\n`;
+
+            if (quantity1 > 0) {
+                message += `Galleta Selz original x${quantity1} - $${(quantity1 * 400).toLocaleString()}\n`;
+            }
+            if (quantity2 > 0) {
+                message += `Galleta Selz Queso x${quantity2} - $${(quantity2 * 400).toLocaleString()}\n`;
+            }
+            if (quantity3 > 0) {
+                message += `Alfajor Panchote x${quantity3} - $${(quantity3 * 350).toLocaleString()}\n`;
+            }
+
+            const totalAmount = (quantity1 * 400) + (quantity2 * 400) + (quantity3 * 350);
+            message += `\nTotal a pagar: $${totalAmount.toLocaleString()}`;
+
+            // Redirigir al link de WhatsApp
+            const whatsappLink = `https://api.whatsapp.com/send?phone=+56996107279&text=${encodeURIComponent(message)}`;
+            window.open(whatsappLink, "_blank");
+        }
+
+        // Función para verificar la contraseña del administrador
+        function verifyAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            const correctPassword = 'admin123'; // Cambiar a la contraseña correcta
+
+            if (password === correctPassword) {
+                document.getElementById('adminPanel').style.display = 'none';
+                document.getElementById('adminForm').style.display = 'block';
+            } else {
+                alert('Contraseña incorrecta');
+            }
+        }
+
+        // Función para añadir un nuevo producto
+        function addProduct() {
+            const productName = document.getElementById('productName').value;
+            const productPrice = document.getElementById('productPrice').value;
+            const productImage = document.getElementById('productImage').value;
+
+            if (productName && productPrice && productImage) {
+                const newProduct = `
+                    <div class="product">
+                        <img src="${productImage}" alt="${productName}">
+                        <label for="quantity1">${productName}</label>
+                        <span class="price">$${productPrice}</span>
+                        <label for="quantity1">Cantidad:</label>
+                        <input type="number" id="quantity1" name="quantity1" min="0" value="0" required onchange="updateTotal()">
+                    </div>
+                `;
+                document.querySelector('.container').innerHTML += newProduct;
+                alert('Producto añadido correctamente');
+            } else {
+                alert('Por favor, complete todos los campos.');
+            }
+        }
+    </script>
+</body>
+</html>
